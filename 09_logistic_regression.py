@@ -126,11 +126,70 @@ print(lr.predict_proba(train_bream_smelt[:5]))
 '''
 
 print(lr.classes_)
+# ['Bream' 'Smelt']
 
 print(lr.coef_, lr.intercept_)
+# [[-0.4037798  -0.57620209 -0.66280298 -1.01290277 -0.73168947]] [-2.16155132]
+# coef_는 가중치 a. 배열이다. 
+# 여기서는 특성 여러 개를 사용했기 때문에 원소가 여러 개이다.
+# intercept_는 절편 b. 절편은 하나이다.
+
+# 끝에 _가 붙어 있는 속성은?
+# 사이킷런 모델들은 지정한 값이 아닌 "학습된" 값들을 저장할 때 다른 속성과 구분되라고 _문자를 추가한다.
 
 decisions = lr.decision_function(train_bream_smelt[:5])
 print(decisions)
 
 from scipy.special import expit
 print(expit(decisions))
+# [0.00240145 0.97264817 0.00513928 0.01415798 0.00232731]
+
+
+# 로지스틱 회귀로 다중 분류 수행하기
+lr = LogisticRegression(C=20, max_iter=1000)
+lr.fit(train_scaled, train_target)
+
+print(lr.score(train_scaled, train_target))
+print(lr.score(test_scaled, test_target))
+# 0.9327731092436975
+# 0.925
+
+print(lr.predict(test_scaled[:5]))
+# ['Perch' 'Smelt' 'Pike' 'Roach' 'Perch']
+
+proba = lr.predict_proba(test_scaled[:5])
+print(np.round(proba, decimals=3))
+'''
+[[0.    0.014 0.841 0.    0.136 0.007 0.003]
+ [0.    0.003 0.044 0.    0.007 0.946 0.   ]
+ [0.    0.    0.034 0.935 0.015 0.016 0.   ]
+ [0.011 0.034 0.306 0.007 0.567 0.    0.076]
+ [0.    0.    0.904 0.002 0.089 0.002 0.001]]
+'''
+
+print(lr.classes_)
+# ['Bream' 'Parkki' 'Perch' 'Pike' 'Roach' 'Smelt' 'Whitefish']
+
+print(lr.coef_.shape, lr.intercept_.shape)
+# (7, 5) (7,)
+
+decision = lr.decision_function(test_scaled[:5])
+print(np.round(decision, decimals=2))
+'''
+[[ -6.5    1.03   5.16  -2.73   3.34   0.33  -0.63]
+ [-10.86   1.93   4.77  -2.4    2.98   7.84  -4.26]
+ [ -4.34  -6.23   3.17   6.49   2.36   2.42  -3.87]
+ [ -0.68   0.45   2.65  -1.19   3.26  -5.75   1.26]
+ [ -6.4   -1.99   5.82  -0.11   3.5   -0.11  -0.71]]
+'''
+
+from scipy.special import softmax
+proba = softmax(decision, axis=1)
+print(np.round(proba, decimals=3))
+'''
+[[0.    0.014 0.841 0.    0.136 0.007 0.003]
+ [0.    0.003 0.044 0.    0.007 0.946 0.   ]
+ [0.    0.    0.034 0.935 0.015 0.016 0.   ]
+ [0.011 0.034 0.306 0.007 0.567 0.    0.076]
+ [0.    0.    0.904 0.002 0.089 0.002 0.001]]
+'''
