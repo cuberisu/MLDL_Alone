@@ -6,7 +6,6 @@ import matplotlib.pyplot as plt
 # plt.show()    # 그래프 보이기
 
 # plot(x, y) 함수로 그래프를 그려보자 
-
 plt.plot([1, 2, 3, 4, 5], [1, 4, 9, 16, 25])    # x축, y축의 값을 파이썬 리스트로 전달
 plt.show()
 
