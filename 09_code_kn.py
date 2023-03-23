@@ -1,4 +1,5 @@
 # 로지스틱 회귀 (Logistic Regression)
+# 1. KNeighborsClassifier 예측 한계
 
 # 럭키백의 확률
 
@@ -7,10 +8,11 @@ import pandas as pd
 fish = pd.read_csv('https://bit.ly/fish_csv_data')
 print(fish.head())  # 표로 나온다.
 print(pd.unique(fish['Species'])) # 물고기 종들을 출력
+# ['Bream' 'Roach' 'Whitefish' 'Parkki' 'Perch' 'Pike' 'Smelt']
 
 # fish_input
+# list에서 특성1, 특성2만 뽑아서 numpy 배열로 바꿔 넣기: list['특성1', '특성2'].to_numpy()
 fish_input = fish[['Weight', 'Length', 'Diagonal', 'Height', 'Width']].to_numpy()
-print(fish_input[:5])
 
 # fish_target
 fish_target = fish['Species'].to_numpy()
@@ -30,20 +32,22 @@ test_scaled = ss.transform(test_input)
 
 # k-최근접 이웃 분류기의 확률 예측
 from sklearn.neighbors import KNeighborsClassifier
-kn = KNeighborsClassifier(n_neighbors=3)
-kn.fit(train_scaled, train_target)
+kn = KNeighborsClassifier(n_neighbors=3)    # default n_neighbors=5
+kn.fit(train_scaled, train_target)             
 print(kn.score(train_scaled, train_target)) # 0.8907563025210085
 print(kn.score(test_scaled, test_target))   # 0.85
 
-print(kn.classes_)
+# target의 class들 출력. abc 순
+print(kn.classes_)  # ['Bream' 'Parkki' 'Perch' 'Pike' 'Roach' 'Smelt' 'Whitefish']
 
-print(kn.predict(test_scaled[:5]))
+# 예측해보기
+print(kn.predict(test_scaled[:5]))  # ['Perch' 'Smelt' 'Pike' 'Perch' 'Perch']
 
-
+# 확률을 출력하기
 import numpy as np
 proba = kn.predict_proba(test_scaled[:5])
-print(np.round(proba, decimals=4))
+print(np.round(proba, decimals=4))  
+# [0.     0.     0.6667 0.     0.3333 0.     0.    ] 이런 식으로 출력
 
-distances, indexes = kn.kneighbors(test_scaled[:5])
-print(np.round(proba, decimals=4))
-
+distances, indexes = kn.kneighbors(test_scaled[3:4])
+print(train_target[indexes])    # [['Roach' 'Perch' 'Perch']]
