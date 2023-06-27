@@ -13,6 +13,7 @@ fish = pd.read_csv('https://bit.ly/fish_csv_data')
 # ['Bream' 'Roach' 'Whitefish' 'Parkki' 'Perch' 'Pike' 'Smelt']
 
 # fish_input (특성 데이터는 5가지 무게, 길이, 대각선, 높이, 두께)
+# list에서 특성1, 특성2만 뽑아서 numpy 배열로 바꿔 넣기: list['특성1', '특성2'].to_numpy()
 fish_input = fish[['Weight', 'Length', 'Diagonal', 'Height', 'Width']].to_numpy()
 # print(fish_input[:5])
 '''
@@ -47,7 +48,7 @@ kn.fit(train_scaled, train_target)
 print(kn.score(train_scaled, train_target)) # 0.8907563025210085
 print(kn.score(test_scaled, test_target))   # 0.85
 
-# species 출력
+# target의 class들 출력. abc 순
 # print(kn.classes_)
 # ['Bream' 'Parkki' 'Perch' 'Pike' 'Roach' 'Smelt' 'Whitefish']
 
@@ -60,11 +61,6 @@ import numpy as np
 proba = kn.predict_proba(test_scaled[:5])
 # print(np.round(proba, decimals=4))
 '''
-[[0.     0.     1.     0.     0.     0.     0.    ]
- [0.     0.     0.     0.     0.     1.     0.    ]
- [0.     0.     0.     1.     0.     0.     0.    ]
- [0.     0.     0.6667 0.     0.3333 0.     0.    ]
- [0.     0.     0.6667 0.     0.3333 0.     0.    ]]
 [[0.     0.     1.     0.     0.     0.     0.    ]
  [0.     0.     0.     0.     0.     1.     0.    ]
  [0.     0.     0.     1.     0.     0.     0.    ]
@@ -172,7 +168,21 @@ print(lr.classes_)
 
 print(lr.coef_.shape, lr.intercept_.shape)
 # (7, 5) (7,)
+# 클래스(생선의 종)가 7개이므로 7개의 행, 특성이 5개이므로 5개의 열
+# 클래스마다 선형함수가 하나씩 만들어진다 (z값이 하나씩 만들어진다)
+# 이진분류처럼 한다 가령 4번째 선형함수를 학습할 때는 4번째 클래스가 양성,
+# 나머지는 음성으로 두고 학습을 한다.
+# 이진분류를 7번 수행. (7번 훈련해서. 선형함수를 만듦.)
+# 대표적인 다중분류의 한 방법이다. 
+# 이진분류를 여러 번 수행해서 다중 분류하는 이 알고리즘을 OvR (One vs Rest)이라 함.
 
+# z값을 확률로 바꾸려면?
+# z 7개를 다 시그모이드 함수에 집어넣으면 합이 1이 안된다...?
+# 7개의 시그모이드가 합이 1이 되어야 함. 한 행에서 확률은 합이 1이어야 확률처럼 느끼기 때문
+# 7개의 z(선형함수)의 출력을 그대로 시그모이드에 넣어서는 안 된다.
+# 다중분류일 경우 시그모이드 함수 말고 다른 함수 softmax를 사용해야 함
+
+# softmax 함수
 decision = lr.decision_function(test_scaled[:5])
 print(np.round(decision, decimals=2))
 '''

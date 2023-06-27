@@ -10,11 +10,9 @@ print(fish.head())  # 표로 나온다.
 print(pd.unique(fish['Species'])) # 물고기 종들을 출력
 # ['Bream' 'Roach' 'Whitefish' 'Parkki' 'Perch' 'Pike' 'Smelt']
 
-# fish_input
+# input, target 설정
 # list에서 특성1, 특성2만 뽑아서 numpy 배열로 바꿔 넣기: list['특성1', '특성2'].to_numpy()
 fish_input = fish[['Weight', 'Length', 'Diagonal', 'Height', 'Width']].to_numpy()
-
-# fish_target
 fish_target = fish['Species'].to_numpy()
 
 # 데이터 나누기
@@ -22,7 +20,7 @@ from sklearn.model_selection import train_test_split
 train_input, test_input, train_target, test_target = train_test_split(
     fish_input, fish_target, random_state=42)
 
-# 표준화 
+# 표준화 (전처리)
 from sklearn.preprocessing import StandardScaler    # 변환기
 ss = StandardScaler()
 ss.fit(train_input)
