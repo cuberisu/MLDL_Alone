@@ -30,7 +30,8 @@ train_input, test_input, train_target, test_target = train_test_split(
 # fit, transform 메서드가 있다. predict나 score 메서드는 존재하지 않음.
 # 이 클래스에서는 특성이 몇 개 있고, 어떤 조합을 만들어줄지 파악하는 정도가 fit 메서드
 from sklearn.preprocessing import PolynomialFeatures
-poly = PolynomialFeatures(include_bias=False)   # include_bias=False는 1을 빼줌 기본값은 True
+poly = PolynomialFeatures(include_bias=False)   # include_bias=False는 1을 빼줌
+                                                # degree=2(제곱수), include_bias=True(1 포함)가 기본값
 poly.fit(train_input)
 train_poly = poly.transform(train_input)
 test_poly = poly.transform(test_input)
@@ -41,13 +42,13 @@ print(poly.get_feature_names_out())    # 각각의 특성이 어떻게 만들어
 
 # 다중 회귀 모델 훈련하기
 from sklearn.linear_model import LinearRegression
-lr = LinearRegression() # degree=2(제곱수), include_bias=True(1 포함)가 기본값
+lr = LinearRegression() 
 lr.fit(train_poly, train_target)
-
 
 # 특성이 많아져서 복잡한 모델이 되었고 점수가 높아졌다.
 print(lr.score(train_poly, train_target))   # 0.9903183436982126
 print(lr.score(test_poly, test_target)) # 0.9714559911594125 
+
 
 # 더 많은 특성 만들기
 poly = PolynomialFeatures(degree=5, include_bias=False) # 5제곱, 1 제외
@@ -59,6 +60,7 @@ test_poly = poly.transform(test_input)
 lr.fit(train_poly, train_target)
 print(lr.score(train_poly, train_target))   # 0.9999999999996433
 print(lr.score(test_poly, test_target))     # -144.40579436844948   너무 과대적합 -> 규제로 해결
+
 
 # 규제 (regularization) (정규화라고도 함)
 # 가중치(기울기)를 작게 만드는 방법. 릿지 회귀 / 라쏘 회귀
