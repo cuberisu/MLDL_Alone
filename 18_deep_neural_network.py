@@ -1,4 +1,5 @@
 # 실행마다 동일한 결과를 얻기 위해 케라스에 랜덤 시드를 사용하고
+# 텐서플로 연산을 결정적으로 만든다. 
 import tensorflow as tf
 tf.keras.utils.set_random_seed(42)
 tf.config.experimental.enable_op_determinism()
@@ -40,7 +41,7 @@ model.fit(train_scaled, train_target, epochs=5)
 
 # 렐루 활성화 함수
 model = keras.Sequential()
-model.add(keras.layers.Flatten(input_shape=(28, 28)))
+model.add(keras.layers.Flatten(input_shape=(28, 28)))   # 1차원 배열로 펼쳐줌
 model.add(keras.layers.Dense(100, activation='relu'))
 model.add(keras.layers.Dense(10, activation='softmax'))
 model.summary()
@@ -65,7 +66,6 @@ sgd = keras.optimizers.SGD()
 model.compile(optimizer=sgd, loss='sparse_categorical_crossentropy', metrics='accuracy')
 
 sgd = keras.optimizers.SGD(learning_rate=0.1)
-
 sgd = keras.optimizers.SGD(momentum=0.9, nesterov=True)
 
 adagrad = keras.optimizers.Adagrad()
