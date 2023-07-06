@@ -13,6 +13,7 @@ from tensorflow import keras
 # print(train_input.shape, train_target.shape)    # (60000, 28, 28) (60000,)
 # print(test_input.shape, test_target.shape)      # (10000, 28, 28) (10000,)
 
+# 10개의 패션 아이템 보이기
 import matplotlib.pyplot as plt
 fig, axs = plt.subplots(1, 10, figsize=(10, 10))
 for i in range(10):
@@ -21,7 +22,6 @@ for i in range(10):
 plt.show()
 
 print([train_target[i] for i in range(10)]) # [9, 0, 0, 3, 0, 2, 7, 2, 5, 5]
-
 
 # unique()로 클래스 분포를 확인. return_counts=True 클래스 정수값이 얼마가 있고 얼마만큼 있는가를 확인시켜줌
 import numpy as np
@@ -37,6 +37,7 @@ train_scaled = train_input / 255.0  # 이미지의 픽셀값이 255까지이기 
 train_scaled = train_scaled.reshape(-1, 28*28)  # 3차원 데이터를 1차원으로 펼치기 위해 reshape()
 print(train_scaled.shape)   # (60000, 784)
 
+# 경사하강법을 활용한 로지스틱 회귀
 from sklearn.model_selection import cross_validate
 from sklearn.linear_model import SGDClassifier
 sc = SGDClassifier(loss='log_loss', max_iter=5, random_state=42)    
@@ -67,6 +68,7 @@ model = keras.Sequential(dense) # 모델을 만들어 dense를 집어넣는다.
 
 # 인공신경망으로 패션 아이템 분류하기
 # 모델 설정 compile() (손실함수 설정, 손실값 기록, 정확도 기록 등)
+# 타깃값이 정수면 sparse를 붙이거나 원핫인코딩을 해야 한다.
 model.compile(loss='sparse_categorical_crossentropy', metrics='accuracy')
 
 print(train_target[:10])
