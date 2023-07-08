@@ -5,7 +5,8 @@ import tensorflow as tf
 tf.keras.utils.set_random_seed(42)
 tf.config.experimental.enable_op_determinism()
 
-# IMDB 리뷰 데이터셋에서 가장 자주 등장하는 단어 300개 추리기
+# train set, test set에 load_data를 이용하여 데이터셋을 반환
+# num_words=300: IMDB 리뷰 데이터셋에서 가장 자주 등장하는 단어 300개 추리기
 # 실제 IMDB 리뷰 데이터셋은 영어 문장이지만 텐서플로에는 이미 정수로 바꾼 데이터가 포함되어 있다.
 from tensorflow.keras.datasets import imdb
 (train_input, train_target), (test_input, test_target) = imdb.load_data(num_words=300)
@@ -21,6 +22,7 @@ print(train_input[0])   # 첫 번째 샘플 출력
 
 print(train_target[:20])    # 이진 분류
 # [1 0 0 1 0 0 1 0 1 0 1 0 0 0 0 0 1 1 0 1]
+
 
 # 훈련 세트 준비
 from sklearn.model_selection import train_test_split
@@ -62,8 +64,8 @@ val_seq = pad_sequences(val_input, maxlen=100)
 from tensorflow import keras
 model = keras.Sequential()
 
-model.add(keras.layers.SimpleRNN(8, input_shape=(100, 300)))    # 순환신경망 층
-model.add(keras.layers.Dense(1, activation='sigmoid'))
+model.add(keras.layers.SimpleRNN(8, input_shape=(100, 300)))    # 순환신경망 층. 8개 뉴런
+model.add(keras.layers.Dense(1, activation='sigmoid'))  # RNN 층 바로 밑에 Dense 층이 있으면 펼칠 필요가 없다.
 
 train_oh = keras.utils.to_categorical(train_seq)    # 원-핫 인코딩
 
@@ -76,6 +78,8 @@ print(np.sum(train_oh[0][0]))   # 1.0 원-핫 인코딩이기 때문에
 val_oh = keras.utils.to_categorical(val_seq)
 
 model.summary()
+# RNN: 500*8 + 8*8 + 8 = 4072
+# Dense: 8*1 + 1 = 9
 
 
 # 순환 신경망 훈련하기
@@ -98,17 +102,14 @@ plt.show()
 
 # 단어 임베딩을 사용하기 (원-핫 인코딩이 아니라 실수 벡터로 변환)
 model2 = keras.Sequential()
-model2.add(keras.layers.Embedding(300, 16, input_length=100))
+model2.add(keras.layers.Embedding(300, 16, input_length=100))   # 16개의 실수 벡터
 model2.add(keras.layers.SimpleRNN(8))
 model2.add(keras.layers.Dense(1, activation='sigmoid'))
-
 model2.summary()
 
 rmsprop = keras.optimizers.RMSprop(learning_rate=1e-4)
 model2.compile(optimizer=rmsprop, loss='binary_crossentropy', metrics=['accuracy'])
-
 checkpoint_cb = keras.callbacks.ModelCheckpoint('best-embedding-model.h5', save_best_only=True)
-
 early_stopping_cb = keras.callbacks.EarlyStopping(patience=3, restore_best_weights=True)
 
 history = model2.fit(train_seq, train_target, epochs=100, batch_size=64, 
